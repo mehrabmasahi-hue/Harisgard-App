@@ -1,4 +1,4 @@
-name: Build APK
+name: Build Harisgard APK
 on: [push, workflow_dispatch]
 jobs:
   build:
@@ -10,11 +10,10 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - name: Install Gradle
-      run: |
-        curl -sL https://services.gradle.org/distributions/gradle-8.6-bin.zip -o gradle.zip
-        unzip -q gradle.zip
-        echo "$PWD/gradle-8.6/bin" >> $GITHUB_PATH
+    - name: Setup Gradle
+      uses: gradle/actions/setup-gradle@v3
+      with:
+        gradle-version: 8.6
     - name: Build APK
       env:
         ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -25,5 +24,5 @@ jobs:
         gradle assembleRelease
     - uses: actions/upload-artifact@v4
       with:
-        name: Harisgard-Release-APK
+        name: Harisgard-APK
         path: "**/build/outputs/apk/release/*.apk"
