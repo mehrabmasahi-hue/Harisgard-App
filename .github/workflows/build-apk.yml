@@ -10,8 +10,19 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
     - uses: android-actions/setup-android@v3
-    - run: chmod +x gradlew || true
-    - run: ./gradlew assembleRelease
+    - name: Install Gradle
+      run: |
+        curl -sL https://services.gradle.org/distributions/gradle-8.6-bin.zip -o gradle.zip
+        unzip -q gradle.zip
+        echo "$PWD/gradle-8.6/bin" >> $GITHUB_PATH
+    - name: Build APK
+      env:
+        ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+        ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+      run: |
+        echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > harisgard-release.jks
+        gradle assembleRelease
     - uses: actions/upload-artifact@v4
       with:
         name: Harisgard-Release-APK
